@@ -24,3 +24,9 @@ Start one or more instances of the Kafka Streams application:
     --application-id my-streams-processor   \
     --hostname localhost
 ```
+
+Get the latest value for any of your keys:
+
+```
+curl http://localhost:8080/messages/[key]
+```
