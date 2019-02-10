@@ -14,6 +14,8 @@ import org.apache.kafka.streams.kstream.Materialized;
 import org.apache.kafka.streams.state.KeyValueBytesStoreSupplier;
 import org.apache.kafka.streams.state.Stores;
 
+import com.bakdata.streams_store.binary.BinaryBase64Serde;
+
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -84,7 +86,7 @@ public class App {
             topicName,
             Materialized.<String, String>as(stateStore)
                 .withKeySerde(Serdes.String())
-                .withValueSerde(Serdes.String())
+                .withValueSerde(new BinaryBase64Serde())
         );
 
         final Topology topology = builder.build();
