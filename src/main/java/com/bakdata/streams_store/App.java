@@ -65,8 +65,6 @@ public class App {
 
             props.put(StreamsConfig.APPLICATION_ID_CONFIG, applicationId);
             props.put(StreamsConfig.APPLICATION_SERVER_CONFIG, hostName + ":" + port);
-            props.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass());
-            props.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass());
         } catch (ArgumentParserException e) {
             if (args.length == 0) {
                 parser.printHelp();
