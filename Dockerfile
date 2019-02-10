@@ -18,3 +18,6 @@ ADD streams-processor .
 
 EXPOSE 8080
 CMD "./streams-processor"
+
+RUN ls -l target/lib
+RUN java -cp target/streams_store-1.0-SNAPSHOT.jar:target/lib/*.jar com.bakdata.streams_store.App $@
