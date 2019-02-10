@@ -65,8 +65,8 @@ public class RestService {
 
     @GET
     @Path("/{key}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public KeyValueBean valueByKey(@PathParam("key") final String key, @Context UriInfo uriInfo) {
+    @Produces(MediaType.TEXT_PLAIN)
+    public String valueByKey(@PathParam("key") final String key, @Context UriInfo uriInfo) {
 
         final StreamsMetadata metadata = streams.metadataForKey(storeName, key, Serdes.String().serializer());
         if (metadata == null) {
@@ -74,7 +74,7 @@ public class RestService {
         }
 
          if (!metadata.hostInfo().equals(hostInfo)) {
-             return fetchValue(metadata.hostInfo(), uriInfo.getPath(), new GenericType<KeyValueBean>() {});
+             return fetchValue(metadata.hostInfo(), uriInfo.getPath(), new GenericType<String>() {});
          }
 
         final ReadOnlyKeyValueStore<String, String> store = streams.store(storeName, QueryableStoreTypes.keyValueStore());
@@ -87,7 +87,7 @@ public class RestService {
             throw new NotFoundException();
         }
 
-        return new KeyValueBean(key, value);
+        return value;
     }
 
     private <T> T fetchValue(final HostInfo host, final String path, GenericType<T> responseType) {
