@@ -14,10 +14,6 @@ FROM solsson/jdk-opensource:11.0.2@sha256:9088fd8eff0920f6012e422cdcb67a590b2a6e
 WORKDIR /app
 
 COPY --from=0 /app/target target
-ADD streams-processor .
 
 EXPOSE 8080
-CMD "./streams-processor"
-
-RUN ls -l target/lib
-RUN java -cp target/streams_store-1.0-SNAPSHOT.jar:target/lib/*.jar com.bakdata.streams_store.App $@
+ENTRYPOINT [ "java", "-cp", "target/streams_store-1.0-SNAPSHOT.jar", "com.bakdata.streams_store.App" ]
