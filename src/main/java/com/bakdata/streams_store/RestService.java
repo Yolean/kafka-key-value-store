@@ -1,9 +1,5 @@
 package com.bakdata.streams_store;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KafkaStreams;
@@ -100,14 +96,6 @@ public class RestService {
                 .get(responseType);
     }
 
-    @AllArgsConstructor @NoArgsConstructor
-    @Getter @Setter
-    public class ProcessorMetadata {
-        private String host;
-        private int port;
-        private List<Integer> topicPartitions;
-    }
-
     @GET()
     @Path("/processors")
     @Produces(MediaType.APPLICATION_JSON)
@@ -117,11 +105,15 @@ public class RestService {
                 .map(metadata -> new ProcessorMetadata(
                         metadata.host(),
                         metadata.port(),
-                        metadata.topicPartitions().stream()
-                                .map(TopicPartition::partition)
-                                .collect(Collectors.toList()))
+                        getTopicPartitions(metadata))
                 )
                 .collect(Collectors.toList());
     }
+
+	private List<Integer> getTopicPartitions(StreamsMetadata metadata) {
+		return metadata.topicPartitions().stream()
+                .map(TopicPartition::partition)
+                .collect(Collectors.toList());
+	}
 }
 
