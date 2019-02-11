@@ -31,6 +31,8 @@ services:
     -   offsets.retention.minutes=10080
 
   pixy:
+    depends_on:
+    - kafka
     image: mailgun/kafka-pixy:0.16.0@sha256:2a2d426f9fe17ede9c21b2f8b7418d8787293e39327b638fd6c403f3726597fb 
     entrypoint:
     - kafka-pixy
@@ -39,9 +41,9 @@ services:
     - -zookeeperPeers
     -  zookeeper:2181
     - -tcpAddr
-    -  0.0.0.0:80
-    expose:
-    - "80"
+    -  0.0.0.0:18090
+    ports:
+    - 18090:18090
 
   cache1:
     depends_on:
@@ -51,9 +53,11 @@ services:
       context: ../
     labels:
     - com.yolean.build-target
+    ports:
+    - 18081:18081
     command:
     - --port
-    -   '8051'
+    -   '18081'
     - --streams-props
     -   bootstrap.servers=kafka:9092
     -   num.standby.replicas=0
@@ -73,9 +77,6 @@ services:
     - com.yolean.build-contract
     expose:
     - "8080"
-    # dev mode, uncomment below
-    volumes:
-    - ../example-nodejs-client:/usr/src/app
-    command:
-    #- --watch
-    - --watchAll
+    environment:
+    - PIXY_HOST=pixy:18090
+    - CACHE1_HOST=cache1:18081

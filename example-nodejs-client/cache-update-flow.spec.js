@@ -1,4 +1,8 @@
 
+const {
+  PIXY_HOST = 'localhost:18090',
+  CACHE1_HOST = 'localhost:18081'
+} = process.env;
 
 const request = require('request');
 
@@ -27,7 +31,7 @@ describe("A complete cache update flow", () => {
 
   test("Check that pixy is online", done => {
 
-    request('http://pixy', function (error, response, body) {
+    request(`http://${PIXY_HOST}`, function (error, response, body) {
       console.log('error:', error); // Print the error if one occurred
       console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received
       console.log('body:', body); // Print the HTML for the Google homepage.
