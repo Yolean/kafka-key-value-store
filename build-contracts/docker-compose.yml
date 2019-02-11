@@ -92,5 +92,5 @@ services:
     expose:
     - "8080"
     environment:
-    - PIXY_HOST=pixy:18090
-    - CACHE1_HOST=cache1:18081
+    - PIXY_HOST=http://pixy:18090
+    - CACHE1_HOST=http://cache1:18081
