@@ -85,6 +85,10 @@ public class App {
                 .withValueSerde(Serdes.String())
         );
 
+        table.toStream().foreach((key, value) -> {
+            System.out.println("Got new value for: " + key);
+        });
+
         final Topology topology = builder.build();
         final KafkaStreams streams = new KafkaStreams(topology, props);
 
