@@ -31,12 +31,12 @@ describe("A complete cache update flow", () => {
   });
 
   it("Starts with a produce to Pixy", async () => {
-    const response = await fetch(`${PIXY_HOST}/topics/${TOPIC1_NAME}/messages`, {
+    const response = await fetch(`${PIXY_HOST}/topics/${TOPIC1_NAME}/messages/?key=testasync`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({test: TEST_ID, n: 1})
+      body: JSON.stringify({test: TEST_ID, step: 'First async produce'})
     });
     expect(response.ok).toBeTruthy();
     expect(await response.json()).toEqual({});
@@ -50,7 +50,7 @@ describe("A complete cache update flow", () => {
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({test: TEST_ID, n: 2})
+      body: JSON.stringify({test: TEST_ID, step: 'First wait for ack'})
     });
     expect(syncResponse.ok).toBeTruthy();
   });
@@ -61,6 +61,7 @@ describe("A complete cache update flow", () => {
     expect(result).toBeTruthy();
     expect(result.partition).toEqual(0);
     expect(result.offset).toBeGreaterThan(1);
+    console.log('Got offset', result.offset, 'partition', result.partition);
   });
 
   it("Until onUpdate is implemented we just have to wait here", done => {
@@ -92,6 +93,18 @@ describe("A complete cache update flow", () => {
 
   it("The current cache offset (global, not the key's latest) is avialable from KV", async () => {
 
+  });
+
+  it("Nothing crashes when messages lack keys, they are simply ignored", async () => {
+    const response = await fetch(`${PIXY_HOST}/topics/${TOPIC1_NAME}/messages`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({test: TEST_ID, step: 'No key'})
+    });
+    expect(response.ok).toBeTruthy();
+    expect(await response.json()).toEqual({});
   });
 
 });

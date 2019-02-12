@@ -1,5 +1,7 @@
 package com.bakdata.streams_store;
 
+import java.util.concurrent.Future;
+
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
@@ -23,7 +25,7 @@ public class OnUpdateREST implements OnUpdate {
 	
 	@Override
 	public void handle(String key) {
-		Response res = client.target(url).request().post(
+		Future<Response> res = client.target(url).request().async().post(
 				Entity.entity(new KeyValueBean("key", key), MediaType.APPLICATION_JSON_TYPE));
 	}
 
