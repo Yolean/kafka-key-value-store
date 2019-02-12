@@ -13,7 +13,7 @@ let server = null;
 
 function start() {
   server = app.listen(port, function () {
-    console.log('listening on port 5678!');
+    console.log('listening on port', port);
   });
 }
 

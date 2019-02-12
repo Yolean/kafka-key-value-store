@@ -29,6 +29,17 @@ services:
     -   min.insync.replicas=1
     - --override
     -   offsets.retention.minutes=10080
+    # For access from dev environment
+    - --override
+    -   listeners=OUTSIDE://:19092,PLAINTEXT://:9092
+    - --override
+    -   advertised.listeners=OUTSIDE://localhost:19092,PLAINTEXT://:9092
+    - --override
+    -   listener.security.protocol.map=PLAINTEXT:PLAINTEXT,OUTSIDE:PLAINTEXT
+    - --override
+    -   inter.broker.listener.name=PLAINTEXT
+    ports:
+    - 19092:19092
 
   pixy:
     depends_on:

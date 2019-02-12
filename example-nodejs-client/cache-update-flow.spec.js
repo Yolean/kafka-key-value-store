@@ -20,7 +20,7 @@ afterAll(() => {
 
 describe("A complete cache update flow", () => {
 
-  test("Check that the mock server is online", async () => {
+  test("Check that the mock server is online on port " + mockserver.port, async () => {
     const response = await fetch(mockserver.localroot);
     expect(response.ok).toBeTruthy();
   });
@@ -64,7 +64,7 @@ describe("A complete cache update flow", () => {
   });
 
   it("Until onUpdate is implemented we just have to wait here", done => {
-    setTimeout(done, 500);
+    setTimeout(done, 900);
   });
 
   it("Finds the value in the cache", async () => {
@@ -73,8 +73,8 @@ describe("A complete cache update flow", () => {
     expect(response.ok).toBeTruthy();
   });
 
-  it("Waits for the cache to notify onUpdate", async () => {
-
+  it("Waits for the cache to notify onUpdate", done => {
+    setTimeout(done, 4999);
   });
 
   it("When the notify handler returns non-200 gets another notify", async () => {
