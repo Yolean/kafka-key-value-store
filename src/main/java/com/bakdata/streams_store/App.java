@@ -33,6 +33,7 @@ public class App {
         String hostName = null;
         Integer port = null;
         String storeName = "key-value-store";
+        String onupdateUrl = null;
 
         try {
             Namespace res = parser.parseArgs(args);
@@ -43,6 +44,7 @@ public class App {
             String applicationId = res.getString("applicationId");
             List<String> streamsProps = res.getList("streamsConfig");
             String streamsConfig = res.getString("streamsConfigFile");
+            onupdateUrl = res.getString("onupdate");
 
             if (streamsProps == null && streamsConfig == null) {
                 throw new ArgumentParserException("Either --streams-props or --streams.config must be specified.", parser);
@@ -75,7 +77,7 @@ public class App {
             }
         }
 
-        final OnUpdate onUpdate = new OnUpdateREST("http://127.0.0.1:8081/something");
+        final OnUpdate onUpdate = onupdateUrl == null ? new OnUpdateNOP() : new OnUpdateREST(onupdateUrl);
 
         final StreamsBuilder builder = new StreamsBuilder();
         KeyValueBytesStoreSupplier stateStore = Stores.inMemoryKeyValueStore(storeName);
@@ -167,6 +169,13 @@ public class App {
                 .metavar("PORT")
                 .setDefault(8080)
                 .help("The TCP Port for the HTTP REST Service");
+
+        parser.addArgument("--onupdate")
+		        .action(store())
+		        .required(false)
+		        .type(String.class)
+		        .metavar("ONUPDATE")
+		        .help("A URL to POST the key to upon updates (may be debounced)");
 
         return parser;
     }

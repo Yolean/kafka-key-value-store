@@ -74,6 +74,7 @@ describe("A complete cache update flow", () => {
   });
 
   it("Waits for the cache to notify onUpdate", done => {
+    // TODO for now we can see a log message that the cache service reaches, but detection/assertion here is TODO
     setTimeout(done, 4999);
   });
 
