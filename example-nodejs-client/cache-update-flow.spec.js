@@ -31,9 +31,14 @@ describe("A complete cache update flow", () => {
   });
 
   test("Check existence of test topic " + TOPIC1_NAME, async () => {
-    const response = await fetch(`${PIXY_HOST}/topics`);
+    const response = await fetch(`${PIXY_HOST}/topics`, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json'
+      }
+    });
     expect(response.ok).toBeTruthy();
-    expect(response.json()).toContain(TOPIC1_NAME);
+    expect(await response.json()).toContain(TOPIC1_NAME);
   });
 
   test("Check that cache is online at " + CACHE1_HOST, async () => {
