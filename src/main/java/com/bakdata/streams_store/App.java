@@ -75,7 +75,7 @@ public class App {
             }
         }
 
-        final OnUpdate onUpdate = new OnUpdateREST("http://localhost:8081/something");
+        final OnUpdate onUpdate = new OnUpdateREST("http://127.0.0.1:8081/something");
 
         final StreamsBuilder builder = new StreamsBuilder();
         KeyValueBytesStoreSupplier stateStore = Stores.inMemoryKeyValueStore(storeName);
