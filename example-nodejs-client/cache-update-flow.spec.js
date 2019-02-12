@@ -25,9 +25,21 @@ describe("A complete cache update flow", () => {
     expect(response.ok).toBeTruthy();
   });
 
-  test("Check that pixy is online", async () => {
+  test("Check that pixy is online at " + PIXY_HOST, async () => {
     const response = await fetch(PIXY_HOST);
     expect(response.status).toEqual(404);
+  });
+
+  test("Check existence of test topic " + TOPIC1_NAME, async () => {
+    const response = await fetch(`${PIXY_HOST}/topics`);
+    expect(response.ok).toBeTruthy();
+    expect(response.json()).toContain(TOPIC1_NAME);
+  });
+
+  test("Check that cache is online at " + CACHE1_HOST, async () => {
+    const response = await fetch(`${CACHE1_HOST}/messages/processors`);
+    expect(await response.json()).toEqual({});
+    expect(response.ok).toBeTruthy();
   });
 
   it("Starts with a produce to Pixy", async () => {
@@ -76,7 +88,7 @@ describe("A complete cache update flow", () => {
 
   it("Waits for the cache to notify onUpdate", done => {
     // TODO for now we can see a log message that the cache service reaches, but detection/assertion here is TODO
-    setTimeout(done, 4999);
+    setTimeout(done, 2000);
   });
 
   it("When the notify handler returns non-200 gets another notify", async () => {
