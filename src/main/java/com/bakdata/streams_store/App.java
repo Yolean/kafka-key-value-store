@@ -9,6 +9,7 @@ import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.Topology;
+import org.apache.kafka.streams.TopologyDescription;
 import org.apache.kafka.streams.kstream.KTable;
 import org.apache.kafka.streams.kstream.Materialized;
 import org.apache.kafka.streams.state.KeyValueBytesStoreSupplier;
@@ -100,6 +101,10 @@ public class App {
 		});
 
         final Topology topology = builder.build();
+
+        TopologyDescription topologyDescribe = topology.describe();
+        System.out.println(topologyDescribe);
+
         final KafkaStreams streams = new KafkaStreams(topology, props);
 
         final RestService restService = new RestService(streams, storeName, hostName, port);
