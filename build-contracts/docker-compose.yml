@@ -95,6 +95,7 @@ services:
 
   example-nodejs-client:
     depends_on:
+    - pixy
     - cache1
     build:
       context: ../example-nodejs-client
