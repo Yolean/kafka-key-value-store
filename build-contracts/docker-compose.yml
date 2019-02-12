@@ -52,9 +52,9 @@ services:
     - -zookeeperPeers
     -  zookeeper:2181
     - -tcpAddr
-    -  0.0.0.0:18090
+    -  0.0.0.0:19090
     ports:
-    - 18090:18090
+    - 19090:19090
 
   topic1-create:
     image: solsson/kafkacat@sha256:b91241b5741fccaef282eb8dbdfb6e5289bb8586274175b1836e57912ffecaef
@@ -79,10 +79,10 @@ services:
     labels:
     - com.yolean.build-target
     ports:
-    - 18081:18081
+    - 19081:19081
     command:
     - --port
-    -   '18081'
+    -   '19081'
     - --streams-props
     -   bootstrap.servers=kafka:9092
     -   num.standby.replicas=0
@@ -104,5 +104,5 @@ services:
     expose:
     - "8080"
     environment:
-    - PIXY_HOST=http://pixy:18090
-    - CACHE1_HOST=http://cache1:18081
+    - PIXY_HOST=http://pixy:19090
+    - CACHE1_HOST=http://cache1:19081

@@ -1,7 +1,7 @@
 
 const {
-  PIXY_HOST = 'http://localhost:18090',
-  CACHE1_HOST = 'http://localhost:18081',
+  PIXY_HOST = 'http://localhost:19090',
+  CACHE1_HOST = 'http://localhost:19081',
   TOPIC1_NAME = 'topic1',
   TEST_ID = '' + new Date().toISOString()
 } = process.env;
@@ -83,7 +83,7 @@ describe("A complete cache update flow", () => {
     const result = await syncResponse.json();
     expect(result).toBeTruthy();
     expect(result.partition).toEqual(0);
-    expect(result.offset).toBeGreaterThan(1);
+    expect(result.offset).toBeGreaterThan(0);
     console.log('Got offset', result.offset, 'partition', result.partition);
   });
 
