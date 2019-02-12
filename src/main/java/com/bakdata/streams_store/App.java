@@ -75,6 +75,8 @@ public class App {
             }
         }
 
+        final OnUpdate onUpdate = new OnUpdateREST("http://localhost:8081/something");
+
         final StreamsBuilder builder = new StreamsBuilder();
         KeyValueBytesStoreSupplier stateStore = Stores.inMemoryKeyValueStore(storeName);
 
@@ -85,9 +87,15 @@ public class App {
                 .withValueSerde(Serdes.String())
         );
 
-        table.toStream().foreach((key, value) -> {
-            System.out.println("Got new value for: " + key);
-        });
+		table.toStream().foreach((key, value) -> {
+			System.out.println("Got new value for: " + key);
+			try {
+				onUpdate.handle(key);
+			} catch (Exception e) {
+				System.out.println("OnUpdate failed: " + onUpdate);
+				e.printStackTrace();
+			}
+		});
 
         final Topology topology = builder.build();
         final KafkaStreams streams = new KafkaStreams(topology, props);
