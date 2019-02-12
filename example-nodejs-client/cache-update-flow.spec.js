@@ -64,7 +64,7 @@ describe("A complete cache update flow", () => {
   });
 
   it("Until onUpdate is implemented we just have to wait here", done => {
-    setTimeout(done, 900);
+    setTimeout(done, 1000);
   });
 
   it("Finds the value in the cache", async () => {
