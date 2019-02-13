@@ -150,6 +150,7 @@ public class RestService {
 	 */
 	@GET()
 	@Path("/values")
+	@Produces(MediaType.TEXT_PLAIN)
 	public Response values() {
 		final ReadOnlyKeyValueStore<String, String> store = streams.store(storeName,
 				QueryableStoreTypes.keyValueStore());
