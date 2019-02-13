@@ -26,7 +26,7 @@ public class OnUpdateREST implements OnUpdate {
 	@Override
 	public void handle(String key) {
 		Future<Response> res = client.target(url).request().async().post(
-				Entity.entity(new KeyValueBean("key", key), MediaType.APPLICATION_JSON_TYPE));
+				Entity.entity(key, MediaType.TEXT_PLAIN_TYPE));
 	}
 
 	@Override
