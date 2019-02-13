@@ -9,6 +9,7 @@ import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.Topology;
+import org.apache.kafka.streams.TopologyDescription;
 import org.apache.kafka.streams.kstream.KTable;
 import org.apache.kafka.streams.kstream.Materialized;
 import org.apache.kafka.streams.state.KeyValueBytesStoreSupplier;
@@ -33,6 +34,7 @@ public class App {
         String hostName = null;
         Integer port = null;
         String storeName = "key-value-store";
+        String onupdateUrl = null;
 
         try {
             Namespace res = parser.parseArgs(args);
@@ -43,6 +45,7 @@ public class App {
             String applicationId = res.getString("applicationId");
             List<String> streamsProps = res.getList("streamsConfig");
             String streamsConfig = res.getString("streamsConfigFile");
+            onupdateUrl = res.getString("onupdate");
 
             if (streamsProps == null && streamsConfig == null) {
                 throw new ArgumentParserException("Either --streams-props or --streams.config must be specified.", parser);
@@ -65,8 +68,6 @@ public class App {
 
             props.put(StreamsConfig.APPLICATION_ID_CONFIG, applicationId);
             props.put(StreamsConfig.APPLICATION_SERVER_CONFIG, hostName + ":" + port);
-            props.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass());
-            props.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass());
         } catch (ArgumentParserException e) {
             if (args.length == 0) {
                 parser.printHelp();
@@ -76,6 +77,8 @@ public class App {
                 System.exit(1);
             }
         }
+
+        final OnUpdate onUpdate = onupdateUrl == null ? new OnUpdateNOP() : new OnUpdateREST(onupdateUrl);
 
         final StreamsBuilder builder = new StreamsBuilder();
         KeyValueBytesStoreSupplier stateStore = Stores.inMemoryKeyValueStore(storeName);
@@ -87,7 +90,21 @@ public class App {
                 .withValueSerde(Serdes.String())
         );
 
+		table.toStream().foreach((key, value) -> {
+			System.out.println("Got new value for: " + key);
+			try {
+				onUpdate.handle(key);
+			} catch (Exception e) {
+				System.out.println("OnUpdate failed: " + onUpdate);
+				e.printStackTrace();
+			}
+		});
+
         final Topology topology = builder.build();
+
+        TopologyDescription topologyDescribe = topology.describe();
+        System.out.println(topologyDescribe);
+
         final KafkaStreams streams = new KafkaStreams(topology, props);
 
         final RestService restService = new RestService(streams, storeName, hostName, port);
@@ -157,6 +174,13 @@ public class App {
                 .metavar("PORT")
                 .setDefault(8080)
                 .help("The TCP Port for the HTTP REST Service");
+
+        parser.addArgument("--onupdate")
+		        .action(store())
+		        .required(false)
+		        .type(String.class)
+		        .metavar("ONUPDATE")
+		        .help("A URL to POST the key to upon updates (may be debounced)");
 
         return parser;
     }
