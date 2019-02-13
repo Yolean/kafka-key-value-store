@@ -18,7 +18,12 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.core.UriInfo;
+
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -140,5 +145,30 @@ public class RestService {
 		return response;
 	}
 	
-}
+	/**
+	 * @return Newline separated values (no keys)
+	 */
+	@GET()
+	@Path("/values")
+	public Response values() {
+		final ReadOnlyKeyValueStore<String, String> store = streams.store(storeName,
+				QueryableStoreTypes.keyValueStore());
+		if (store == null) {
+			throw new NotFoundException();
+		}
 
+		final KeyValueIterator<String, String> all = store.all();
+
+		StreamingOutput stream = new StreamingOutput() {
+			@Override
+			public void write(OutputStream out) throws IOException, WebApplicationException {
+				while (all.hasNext()) {
+					out.write(all.next().value.getBytes());
+					out.write('\n');
+				}
+			}
+		};
+		return Response.ok(stream).build();
+	}
+	
+}
