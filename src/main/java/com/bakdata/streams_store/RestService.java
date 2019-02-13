@@ -20,6 +20,7 @@ import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -115,5 +116,29 @@ public class RestService {
                 .map(TopicPartition::partition)
                 .collect(Collectors.toList());
 	}
+	
+	/**
+	 * All keys in this instance (none from the partitions not represented here)
+	 *
+	 */
+	@GET()
+	@Path("/keys")
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<String> keys() {
+		final ReadOnlyKeyValueStore<String, String> store = streams.store(storeName,
+				QueryableStoreTypes.keyValueStore());
+		if (store == null) {
+			throw new NotFoundException();
+		}
+
+		KeyValueIterator<String, String> all = store.all();
+		List<String> response = new LinkedList<String>();
+		while (all.hasNext()) {
+			response.add(all.next().key);
+		}
+
+		return response;
+	}
+	
 }
 
